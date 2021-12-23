@@ -22,8 +22,8 @@ img_canny = cv2.Canny(img, 100, 100)
 kernel5 = np.ones((5,5), np.uint8)
 kernel3 = np.ones((3,3), np.uint8)
 
-img_erode = cv2.erode(img_canny, kernel3, iterations=1)
-img_dilated = cv2.dilate(img_erode, kernel5, iterations = 2)
+#img_erode = cv2.erode(img_canny, kernel3, iterations=1)
+img_dilated = cv2.dilate(img_canny, kernel5, iterations = 2)
 
 cv2.imshow("Output", img_cropped)
 cv2.imshow("Canny", img_canny)
@@ -43,12 +43,9 @@ cv2.waitKey(1)
 #Webcam
 cap = cv2.VideoCapture(0)
 
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 800)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
-
 while True:
     success, img = cap.read()
-    cv2.imshow("Video", img)
+    cv2.imshow("test", img)
 
     if cv2.waitKey(30) & 0xFF ==ord("q"):
         break

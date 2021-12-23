@@ -1,3 +1,5 @@
+#%%
+
 import cv2
 import numpy as np
 
@@ -17,3 +19,16 @@ cv2.waitKey(0)
 
 cv2.destroyAllWindows()
 cv2.waitKey(1)
+
+
+#%%
+# Stack images horizontally (or vertically with vstack)
+
+hor = np.hstack((img, img))
+
+cv2.imshow("Image", hor)
+cv2.waitKey(0)  
+
+cv2.destroyAllWindows()
+cv2.waitKey(1)
+# %%
