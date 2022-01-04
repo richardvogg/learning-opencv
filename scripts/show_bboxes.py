@@ -24,8 +24,18 @@ while True:
     
     for det in dets:
         dt = det.split(",")
-        cv2.rectangle(img, (int(float(dt[2])), int(float(dt[3]))), 
-        (int(float(dt[2]) + float(dt[4])), int(float(dt[3]) + float(dt[5]))),(255,0,0),4)
+
+        i = float(dt[1])
+        c1 = float(dt[2])
+        c2 = float(dt[3])
+        c3 = float(dt[4])
+        c4 = float(dt[5])
+
+        color = (i * 100 % 255, i * 75 % 255, i * 50 % 255)
+
+        cv2.rectangle(img, (int(c1), int(c2)), (int(c1 + c3), int(c2 + c4)), color, 4)
+        cv2.rectangle(img, (int(c1),int(c2 + 30)), (int(c1 + 30),int(c2)), color, cv2.FILLED)
+        cv2.putText(img, dt[1], (int(c1 + 5),int(c2 + 25)), cv2.FONT_HERSHEY_PLAIN, 1, (0,0,0))
     
     cv2.imshow("test", img)
 
