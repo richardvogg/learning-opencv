@@ -1,14 +1,115 @@
 import wx
-from wx.core import ID_ANY
+import os
+
+class myApp(wx.App):
+    def __init__(self):
+        super().__init__()
+        
+        frame = myFrame(parent = None, title = "Labelling")
+        frame.Show()
 
 
 class myFrame(wx.Frame):
-    def __init__(self, parent, title, pos=(500, 500)):
-        super().__init__(parent = parent, title = title, pos = pos)
+    def __init__(self, parent, title):
+        super().__init__(parent = parent, title = title, size = (500,500), pos=(100, 100))
+        self.InitUI()
+
+    def InitUI(self):
+        
+        menuBar = wx.MenuBar()
+
+
+        fileMenu = FileMenu(parentFrame=self)
+        menuBar.Append(fileMenu, '&File')
+        
+        editMenu = EditMenu(parentFrame = self)
+        menuBar.Append(editMenu, '&Edit')
+
+
+        self.SetMenuBar(menuBar)
+        self.Center()
+
+        self.panel = myForm(parent = self)
+
+
+class FileMenu(wx.Menu):
+    def __init__(self, parentFrame):
+        super().__init__()
         self.OnInit()
+        self.parentFrame = parentFrame
+    
+    def OnInit(self):
+        newItem = wx.MenuItem(parentMenu = self, id = wx.ID_NEW, text = "&New\tCTRL+N")
+        self.Append(newItem)
+        self.Bind(event = wx.EVT_MENU, handler = self.OnNew, source = newItem)
+
+        openItem = wx.MenuItem(parentMenu = self, id = wx.ID_OPEN, text = "&Open")
+        self.Append(openItem)
+        self.Bind(event = wx.EVT_MENU, handler = self.OnOpen, source = openItem)
+
+        saveItem = wx.MenuItem(parentMenu = self, id = wx.ID_SAVE, text = "&Save")
+        self.Append(saveItem)
+        self.Bind(event = wx.EVT_MENU, handler = self.OnSave, source = saveItem)
+
+        quitItem = wx.MenuItem(parentMenu = self, id = wx.ID_EXIT, text = "&Quit")
+        self.Append(quitItem)
+        self.Bind(event = wx.EVT_MENU, handler = self.OnQuit, source = quitItem)
+
+    def OnNew(self):
+        print("New Item")
+
+    def OnOpen(self, event):
+        wildcard = "TXT files (*.txt)|*.txt"
+        dialog = wx.FileDialog(self.parentFrame, "Open Text Files", wildcard,
+                                style = wx.FD_OPEN|wx.FD_FILE_MUST_EXIST)
+        
+        if dialog.ShowModal() == wx.ID_CANCEL:
+            return None
+
+        path = dialog.GetPath()
+        if os.path.exists(path):
+            with open(path) as myfile:
+                for line in myfile:
+                    self.parentFrame.panel.input1.WriteText(line)
+    
+    def OnSave(self, event):
+        dialog = wx.FileDialog(self.parentFrame, "Save your data", defaultFile = "test.txt",
+                                style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
+        
+        if dialog.ShowModal() == wx.ID_CANCEL:
+            return None
+
+        path = dialog.GetPath()
+        data = self.parentFrame.text.GetValue()
+        print(data)
+        data = data.split("\n")
+        with open(path, "w+") as myfile:
+            for line in data:
+                myfile.write(line+"\n")
+
+    def OnQuit(self, event):
+        self.parentFrame.Close()
+
+
+class EditMenu(wx.Menu):
+    def __init__(self, parentFrame):
+        super().__init__()
+        self.parentFrame = parentFrame
+        self.OnInit()
+        
 
     def OnInit(self):
-        panel = myForm(parent = self)
+        cutItem = wx.MenuItem(parentMenu = self, id = wx.ID_CUT, text = "&Cut\tCTRL+X")
+        self.Append(cutItem)
+
+        copyItem = wx.MenuItem(parentMenu = self, id = wx.ID_COPY, text = "&Copy\tCTRL+C")
+        self.Append(copyItem)
+
+        pasteItem = wx.MenuItem(parentMenu = self, id = wx.ID_PASTE, text = "&Paste\tCTRL+V")
+        self.Append(pasteItem)
+
+
+
 
 class myForm(wx.Panel):
     def __init__(self, parent):
@@ -89,7 +190,5 @@ class myForm(wx.Panel):
         self.Layout()
 
 if __name__ == "__main__":
-    app = wx.App(clearSigInt=True)
-    frame = myFrame(parent = None, title = "labelling", pos = (100, 200))
-    frame.Show()
+    app = myApp()
     app.MainLoop()
