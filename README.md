@@ -19,7 +19,7 @@ This is what I learned in the scripts:
     - Use trackbars to filter out certain colors of an image
 - [drawOnScreen.py](https://github.com/richardvogg/learning-opencv/blob/main/scripts/drawOnScreen.py)
     - "Draw" with a selected color on the screen which is recording from the webcam. "Draw" is in quotes, because the program is simply detecting the color (e.g. in a pencil) and drawing dots where it moves.
-![](data/draw.png)
+![](imgs/draw.png)
 - [show_bboxes.py](https://github.com/richardvogg/learning-opencv/blob/main/scripts/show_bboxes.py)
     - Load a video of monkeys and the .txt file with the output of the monkey tracking model.
     - Draw bounding boxes from the .txt file into the video.
