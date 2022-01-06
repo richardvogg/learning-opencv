@@ -15,7 +15,7 @@ with open('/Users/vogg/Documents/Python/learning-opencv/data/results.txt') as f:
 
 class ImagePanel(wx.Panel):
 
-    def __init__(self, parent, fps=15):
+    def __init__(self, parent):
         super().__init__(parent)
 
         self.count = 0
