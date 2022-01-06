@@ -1,57 +1,61 @@
 import wx
+from wx import html2
 
-class MyApp(wx.App):
+class myApp(wx.App):
     def __init__(self):
-        super().__init__()
-        frame = MainFrame()
-        frame.Show()
+        super().__init__(clearSigInt=True)
+        webbrowser = WebFrame(parent = None, title = "My Web App")
+        webbrowser.Show()
 
-class NBPage(wx.Panel):
-    def __init__(self, parent, message):
+
+class WebFrame(wx.Frame):
+    def __init__(self, parent, title):
+        super().__init__(parent, title = title, pos = (100,100))
+
+        self._browser = html2.WebView.New(self)
+        self._browser.LoadURL("www.google.com")
+
+        self._navbar = NavBar(self, self._browser)
+        
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self._navbar, 0, wx.EXPAND)
+        sizer.Add(self._browser, 1, wx.EXPAND)
+
+        self.SetSizer(sizer)
+
+
+class NavBar(wx.Panel):
+    def __init__(self, parent, browser):
         super().__init__(parent)
-        text = wx.StaticText(parent=self, id=wx.ID_ANY, label=message, pos=(20,20))
+        self._browser = browser
+        self._url = wx.TextCtrl(parent = self, style = wx.TE_PROCESS_ENTER)
+        self._url.SetHint("Enter URL address")
 
-class MainFrame(wx.Frame):
-    def __init__(self):
-        super().__init__(None, title="Simple Notebook Example", pos = (100, 100))
+        back = wx.Button(self, style = wx.BU_EXACTFIT)
+        back.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_GO_BACK)
 
-        # Here we create a panel and a notebook on the panel
-        self.p = wx.Panel(self)
-        self.nb = wx.Notebook(self.p) # notebook will go on panel within a sizer
+        forward = wx.Button(self, style = wx.BU_EXACTFIT)
+        forward.Bitmap = wx.ArtProvider.GetBitmap(wx.ART_GO_FORWARD)
 
-        # finally, put the notebook in a sizer for the panel to manage
-        # the layout
-        sizer = wx.BoxSizer()
-        sizer.Add(window=self.nb, proportion=1, flag=wx.EXPAND) # The item will be expanded to fill the space assigned to the item.
-        # set proporition = 1 to allow changes (i.e. new pages)
-        self.p.SetSizer(sizer)
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(back, 0, wx.ALL, 5)
+        sizer.Add(forward, 0, wx.ALL, 5)
+        sizer.Add(self._url, 0, wx.ALL, 5)
+        
+        self.SetSizer(sizer)
 
-        self.createMenu() # initialize the menu bar
+    def OnEnter(self, event):
+        self.browser.LoadURL(self._url.Value)
+    
+    def GoBack(self, event):
+        event.Enable(self._browser.CanGoBack())
+        self._browser.GoBack()
 
-    def createMenu(self):
-        menuBar = wx.MenuBar()
-
-        fileMenu = wx.Menu() # first 
-        newItem = wx.MenuItem(parentMenu=fileMenu, id=wx.ID_NEW, 
-                text='New Page\tCtrl+N', helpString='Create New Page', 
-                kind=wx.ITEM_NORMAL) # subMenu is final option
-        fileMenu.Append(newItem)
-        self.Bind(event=wx.EVT_MENU, handler=self.onNewItem, source=newItem)
-
-        # finally, append the File Menu
-        menuBar.Append(fileMenu, '&File')
-
-        # finally, add the Menu Bar
-        self.SetMenuBar(menuBar)
-
-    def onNewItem(self, event):
-        count = self.nb.GetPageCount() + 1 # add 1 for extra page
-        message = "This is page {}".format(count)
-        page = NBPage(self.nb, message)
-        self.nb.AddPage(page, "Page " + str(count))
-
+    def GoForward(self, event):
+        event.Enable(self._browser.CanGoForward())
+        self._browser.GoForward()
 
 
 if __name__ == "__main__":
-    app = MyApp()
+    app = myApp()
     app.MainLoop()
